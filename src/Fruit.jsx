@@ -1,14 +1,12 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import FruitCard from "./FruitCard";
-import Form from "./Form";
 
 export default function Fruit() {
   let [fruitData, setFruitData] = useState([]);
 
   const callAPI = async () => {
     let data = await axios.get("http://localhost:8080/fruit");
-    console.log(data);
     setFruitData(data.data.fruit);
   };
 
@@ -36,7 +34,6 @@ export default function Fruit() {
           <p>No data here</p>
         )}
       </div>
-      <Form />
     </div>
   );
 }

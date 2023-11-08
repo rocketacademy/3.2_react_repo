@@ -1,7 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
+import { useAuth0 } from "@auth0/auth0-react";
+import { useNavigate } from "react-router-dom";
 
 export default function Form() {
+  const { isAuthenticated, getAccessTokenSilently, loginWithRedirect } =
+    useAuth0();
+
+  const navigate = useNavigate();
+
+  const [accessToken, setAccessToken] = useState("");
+
+  const checkUser = async () => {
+    if (isAuthenticated) {
+      let token = await getAccessTokenSilently();
+      setAccessToken(token);
+    } else {
+      loginWithRedirect();
+    }
+  };
+
+  useEffect(() => {
+    checkUser();
+  }, []);
+
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [colour, setColour] = useState("");
@@ -11,14 +33,23 @@ export default function Form() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    let request = await axios.post("http://localhost:8080/fruit", {
-      name,
-      description,
-      colour,
-      price,
-      stock,
-      image_url,
-    });
+    let request = await axios.post(
+      "http://localhost:8080/fruit",
+      {
+        name,
+        description,
+        colour,
+        price,
+        stock,
+        image_url,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    navigate("/");
     console.log(request);
   };
 
